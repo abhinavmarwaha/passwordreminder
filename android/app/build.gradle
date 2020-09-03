@@ -53,20 +53,20 @@ android {
         }
     }
 
-    flavorDimensions "deploy"
+    // flavorDimensions "deploy"
 
-    productFlavors {
-        fdroid {
-            dimension "deploy"
-            signingConfig null
-        }
+    // productFlavors {
+    //     fdroid {
+    //         dimension "deploy"
+    //         signingConfig null
+    //     }
         
-        playstore {
-            dimension "deploy"
-            signingConfig signingConfigs.release
-             proguardFile 'proguard.pro'
-        }
-    }
+    //     playstore {
+    //         dimension "deploy"
+    //         signingConfig signingConfigs.release
+    //          proguardFile 'proguard.pro'
+    //     }
+    // }
 }
 
 flutter {

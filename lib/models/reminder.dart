@@ -1,11 +1,11 @@
 class Reminder {
-  final int id;
-  final String name;
-  final String userName;
-  final String passwordHash;
-  final reminding_time time;
-  final int remindingTimeOfTheDayHour;
-  final int remindingTimeOfTheDayMin;
+  int id;
+  String name;
+  String userName;
+  String passwordHash;
+  reminding_time time;
+  int remindingTimeOfTheDayHour;
+  int remindingTimeOfTheDayMin;
 
   Reminder(
       {this.id,
@@ -16,6 +16,16 @@ class Reminder {
       this.remindingTimeOfTheDayHour,
       this.remindingTimeOfTheDayMin});
 
+  Reminder.fromMap(Map<String, dynamic> map) {
+    this.id = map['id'];
+    this.name = map['name'];
+    this.userName = map['userName'];
+    this.passwordHash = map['passwordHash'];
+    this.time = map['time'];
+    this.remindingTimeOfTheDayHour = map['remindingTimeOfTheDayHour'];
+    this.remindingTimeOfTheDayMin = map['remindingTimeOfTheDayMin'];
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -24,7 +34,7 @@ class Reminder {
       'passwordHash': passwordHash,
       'time': time.toShortString(),
       'remindingTimeOfTheDayHour': remindingTimeOfTheDayHour,
-      'remindingTimeOfTheDayMin': remindingTimeOfTheDayMin
+      'remindingTimeOfTheDayMin': remindingTimeOfTheDayMin,
     };
   }
 }

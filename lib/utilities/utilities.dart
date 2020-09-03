@@ -1,7 +1,9 @@
+import 'package:passwordreminder/models/reminder.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:password/password.dart';
+import 'package:intl/intl.dart';
 
 class Utilities {
   static Future<void> launchInWebViewOrVC(String url) async {
@@ -23,21 +25,34 @@ class Utilities {
     }
   }
 
-  static Future<bool> getZenBool() async {
+  static Future<String> getDefInterval() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool zenBool;
-    if (prefs.containsKey('zenBool'))
-      zenBool = prefs.getBool('zenBool');
+    String definterval;
+    if (prefs.containsKey('definterval'))
+      definterval = prefs.getString('definterval');
     else {
-      await prefs.setBool('zenBool', false);
-      zenBool = false;
+      await prefs.setString(
+          'definterval', reminding_time.daily.toShortString());
+      definterval = reminding_time.daily.toShortString();
     }
-    return zenBool;
+    return definterval;
   }
 
-  static Future<bool> setZenBool(bool _zen) async {
+  static Future<String> getDefRemindingTimeOfDay() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setBool('zenBool', _zen);
+    String defRemindingTimeOfDay;
+    if (prefs.containsKey('defRemindingTimeOfDay'))
+      defRemindingTimeOfDay = prefs.getString('defRemindingTimeOfDay');
+    else {
+      await prefs.setString('defRemindingTimeOfDay', "21:00");
+      defRemindingTimeOfDay = reminding_time.daily.toShortString();
+    }
+    return defRemindingTimeOfDay;
+  }
+
+  static Future<bool> setStringInPref(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString(key, value);
   }
 
   static String hash(String psswd) {
@@ -47,5 +62,10 @@ class Utilities {
 
   static bool verify(String psswd, String hash) {
     return Password.verify(psswd, hash);
+  }
+
+  static String formatDate(DateTime date) {
+    final DateFormat formatter = DateFormat('yyyyMMdd');
+    return formatter.format(date);
   }
 }
