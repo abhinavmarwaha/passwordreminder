@@ -34,7 +34,7 @@ you can get the latest release [here](https://github.com/abhinavmarwaha/password
 
 ## Todo
 
-[Roadmap](https://github.com/abhinavmarwaha/passwordreminder/projects/1).
+[Roadmap](https://github.com/abhinavmarwaha/passwordreminder/projects/2).
 
 ## License
 
