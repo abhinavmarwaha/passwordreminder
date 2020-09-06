@@ -1,4 +1,4 @@
-name: PasswordReminder
+name: passwordreminder
 description: Reminds passwords so that you don't forget the ones that you saved the login for.
 
 publish_to: 'none' 
