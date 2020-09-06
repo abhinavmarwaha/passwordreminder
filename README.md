@@ -1,20 +1,11 @@
 <br>
 
 <p align='center'>
-<img height="128"  src="fastlane/metadata/android/en-US/images/featureGraphic.png"/>
+<img height="158"  src="fastlane/metadata/android/en-US/images/featureGraphic.png"/>
 </p>
 
 <p align='center'>
 Reminds passwords so that you don't forget the ones that you saved the login for.
-</p>
- 
-<p align='center'>
-    <a href='https://play.google.com/store/apps/details?id=com.abhinavmarwaha.passwordreminder'>
-        <img  height="56"  alt='Get it on Google Play' style="padding-right:8px;" src='assets/get-it-on-play-store.png' />
-    </a>
-    <a href='https://f-droid.org/packages/org.abhinavmarwaha.passwordreminder/'>
-        <img height="56" src="assets/external/get-it-on-fdroid.png">
-    </a>
 </p>
 
 <br>
