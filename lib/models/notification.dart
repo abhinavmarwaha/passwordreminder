@@ -1,5 +1,4 @@
 import 'package:passwordreminder/models/reminder.dart';
-import 'package:passwordreminder/utilities/utilities.dart';
 
 class Notification {
   int id;
@@ -7,17 +6,18 @@ class Notification {
   String day;
   int hour;
   int min;
-  DateTime dateTime;
+  // DateTime dateTime;
   reminding_time reminding;
 
-  Notification(
-      {this.id,
-      this.day,
-      this.hour,
-      this.min,
-      this.reminderId,
-      this.reminding,
-      this.dateTime});
+  Notification({
+    this.id,
+    this.day,
+    this.hour,
+    this.min,
+    this.reminderId,
+    this.reminding,
+    // this.dateTime
+  });
 
   Notification.fromMap(Map<String, dynamic> map) {
     this.id = map['id'];
@@ -26,7 +26,7 @@ class Notification {
     this.hour = map['hour'];
     this.min = map['min'];
     this.reminding = getEnum(map['reminding']);
-    this.dateTime = DateTime.parse(map['dateTime']);
+    // this.dateTime = DateTime.parse(map['dateTime']);
   }
 
   Map<String, dynamic> toMap() {
@@ -37,7 +37,7 @@ class Notification {
       'hour': hour,
       'min': min,
       'reminding': reminding.toShortString(),
-      'dateTime': Utilities.formatDate(dateTime)
+      // 'dateTime': Utilities.formatDate(dateTime)
     };
   }
 }

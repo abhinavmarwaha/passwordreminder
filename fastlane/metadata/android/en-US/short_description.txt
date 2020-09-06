@@ -1,0 +1,1 @@
+Reminds passwords so that you don't forget the ones that you saved the login for.

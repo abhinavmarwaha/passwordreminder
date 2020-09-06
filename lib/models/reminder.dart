@@ -21,7 +21,7 @@ class Reminder {
     this.name = map['name'];
     this.userName = map['userName'];
     this.passwordHash = map['passwordHash'];
-    this.time = map['time'];
+    this.time = getEnum(map['time']);
     this.remindingTimeOfTheDayHour = map['remindingTimeOfTheDayHour'];
     this.remindingTimeOfTheDayMin = map['remindingTimeOfTheDayMin'];
   }
@@ -44,9 +44,9 @@ enum reminding_time {
   tryweekly,
   biweekly,
   weekly,
-  bimonthly,
-  monthly,
-  spaced_repetaion
+  // bimonthly,
+  // monthly,
+  // spaced_repetaion
 }
 
 extension ParseToString on reminding_time {

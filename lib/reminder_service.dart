@@ -4,21 +4,13 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:passwordreminder/constants.dart';
 import 'package:passwordreminder/db_helper.dart';
-import 'package:passwordreminder/screens/home_screen.dart';
+import 'package:passwordreminder/models/reminder.dart';
 import 'dart:async';
 
-BuildContext _context;
 FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
 
-class ReminderServie {
-  ReminderServie(BuildContext context) {
-    _context = context;
-    Timer.periodic(Duration(days: 30), (timer) {
-      DbHelper().updateRemindersForNextMonth();
-    });
-    Timer.periodic(Duration(days: 1), (timer) {
-      DbHelper().deleteNotificationDaily();
-    });
+class ReminderService {
+  ReminderService() {
     serviceSetup();
   }
 
@@ -31,44 +23,23 @@ class ReminderServie {
         initializationSettingsAndroid, initializationSettingsIOS);
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: selectNotification);
+
+    Timer.periodic(Duration(days: 1), (timer) {
+      curRemin = null;
+    });
   }
+
+  Reminder curRemin;
 
   Future selectNotification(String payload) async {
     if (payload != null) {
       debugPrint('notification payload: ' + payload);
     }
-    DbHelper().deleteNotification(int.parse(payload));
-    await Navigator.push(
-      _context,
-      MaterialPageRoute(
-          builder: (context) => HomeScreen(
-                title: 'Passwords',
-                payload: payload,
-              )),
-    );
-  }
-
-  Future<void> nowNotif(int _id, String _title, String _body) async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        CHANNEL_ID, CHANNEL_NAME, CHANNEL_DESC,
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await _flutterLocalNotificationsPlugin.show(
-        _id, _title, _body, platformChannelSpecifics,
-        payload: _id.toString());
-  }
-
-  scheduleNotif(int _id, DateTime dateTime) async {
-    var androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(CHANNEL_ID, CHANNEL_NAME, CHANNEL_DESC);
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    NotificationDetails platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await _flutterLocalNotificationsPlugin.schedule(
-        _id, REMINDER_TITLE, REMINDER_BODY, dateTime, platformChannelSpecifics,
-        payload: _id.toString(), androidAllowWhileIdle: true);
+    DbHelper().getNotification(int.parse(payload)).then((notif) {
+      DbHelper()
+          .getReminder(notif.reminderId)
+          .then((value) => curRemin = value);
+    });
   }
 
   dailyNotif(int _id, int hour, int min) async {
@@ -106,21 +77,7 @@ class ReminderServie {
     );
   }
 
-  monthlyNotif(int _id, int hour, int min) {
-    // 1984–04–02 00:00:00.000
-    DateTime now = DateTime.now();
-    if (now.day > 1) {
-      DateTime dateTime =
-          DateTime.parse("${now.year}-${now.month + 1}-1 $hour:$min:00.000");
-      scheduleNotif(_id, dateTime);
-    } else {
-      DateTime dateTime =
-          DateTime.parse("${now.year}-${now.month}-1 $hour:$min:00.000");
-      scheduleNotif(_id, dateTime);
-    }
-  }
-
-  spacedNotif(int hour, int min, String payload) {}
+  // spacedNotif(int hour, int min, String payload) {}
 
   deleteNotif(int _id) async {
     await _flutterLocalNotificationsPlugin.cancel(_id);
@@ -135,15 +92,23 @@ class ReminderServie {
         .getNotificationAppLaunchDetails();
   }
 
-  Future<List<PendingNotificationRequest>> pendingNotif() async {
+  Future<List<PendingNotificationRequest>> getPendingNotif() async {
     return await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
+  }
+
+  printPendingNotif() async {
+    (await _flutterLocalNotificationsPlugin.pendingNotificationRequests())
+        .forEach((element) {
+      print(element.id);
+    });
   }
 }
 
 GetIt locator = GetIt.instance;
 
-setupServiceLocator(BuildContext context) {
-  if (!locator.isRegistered(instanceName: ReminderService))
-    locator.registerLazySingleton<ReminderServie>(() => ReminderServie(context),
-        instanceName: ReminderService);
+setupServiceLocator() {
+  if (!locator.isRegistered(instanceName: REMINDER_SERVICE)) {
+    locator.registerLazySingleton<ReminderService>(() => ReminderService(),
+        instanceName: REMINDER_SERVICE);
+  }
 }

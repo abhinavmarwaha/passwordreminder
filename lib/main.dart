@@ -5,6 +5,7 @@ import 'package:passwordreminder/utilities/theme_changer.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -15,8 +16,9 @@ class MyApp extends StatelessWidget {
         create: (_) => ThemeChanger(),
         child: Builder(builder: (context) {
           final theme = Provider.of<ThemeChanger>(context);
-          setupServiceLocator(context);
+          setupServiceLocator();
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'Password Reminder',
             theme: theme.getTheme(),
             home: HomeScreen(title: 'Passwords'),

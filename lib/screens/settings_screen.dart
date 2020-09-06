@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:passwordreminder/utilities/theme_changer.dart';
 import 'package:passwordreminder/utilities/utilities.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
+import '../models/reminder.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _darkMode = false;
   int hour, min;
+  String _selectedTime;
   String _selectedTimeOfTheDayString;
 
   @override
@@ -22,27 +25,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _darkMode = value;
       });
     });
+    Utilities.getDefRemindingTimeOfDay().then((value) => setState(() {
+          _selectedTimeOfTheDayString = value;
+          hour = int.parse(_selectedTimeOfTheDayString.split(":")[0]);
+          min = int.parse(_selectedTimeOfTheDayString.split(":")[1]);
+        }));
+    Utilities.getDefInterval()
+        .then((value) => setState(() => _selectedTime = value));
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-  }
-
-  _pickTime() async {
-    TimeOfDay date = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (date != null) {
-      hour = date.hour;
-      min = date.minute;
-      setState(() {
-        _selectedTimeOfTheDayString =
-            date.hour.toString() + " : " + date.minute.toString();
-      });
-    }
   }
 
   @override
@@ -82,12 +77,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     context: context,
                     builder: (context) {
                       return StatefulBuilder(builder: (context, setState) {
-                        var remindingTime;
-                        String _selectedTime;
-                        Utilities.getDefRemindingTimeOfDay().then(
-                            (value) => _selectedTimeOfTheDayString = value);
-                        Utilities.getDefInterval()
-                            .then((value) => _selectedTime = value);
                         return Dialog(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0)),
@@ -98,124 +87,81 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: SingleChildScrollView(
                                 child: Column(
                                   children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          groupValue: _selectedTime,
-                                          value: remindingTime.daily
-                                              .toShortString(),
-                                          onChanged: (value) => setState(() {
-                                            _selectedTime = value;
-                                          }),
-                                        ),
-                                        Text(remindingTime.daily
-                                            .toShortString()),
-                                      ],
+                                    RadioListTile(
+                                      title: Text(
+                                          reminding_time.daily.toShortString()),
+                                      groupValue: _selectedTime,
+                                      value:
+                                          reminding_time.daily.toShortString(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _selectedTime = value;
+                                        });
+                                      },
                                     ),
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          groupValue: _selectedTime,
-                                          value: remindingTime.tryweekly
-                                              .toShortString(),
-                                          onChanged: (value) => setState(() {
-                                            _selectedTime = value;
-                                          }),
-                                        ),
-                                        Text(remindingTime.tryweekly
-                                            .toShortString()),
-                                      ],
+                                    RadioListTile(
+                                      title: Text(reminding_time.tryweekly
+                                          .toShortString()),
+                                      groupValue: _selectedTime,
+                                      value: reminding_time.tryweekly
+                                          .toShortString(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _selectedTime = value;
+                                        });
+                                      },
                                     ),
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          groupValue: _selectedTime,
-                                          value: remindingTime.biweekly
-                                              .toShortString(),
-                                          onChanged: (value) => setState(() {
-                                            _selectedTime = value;
-                                          }),
-                                        ),
-                                        Text(remindingTime.biweekly
-                                            .toShortString()),
-                                      ],
+                                    RadioListTile(
+                                      title: Text(reminding_time.biweekly
+                                          .toShortString()),
+                                      groupValue: _selectedTime,
+                                      value: reminding_time.biweekly
+                                          .toShortString(),
+                                      onChanged: (value) => setState(() {
+                                        _selectedTime = value;
+                                      }),
                                     ),
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          groupValue: _selectedTime,
-                                          value: remindingTime.weekly
-                                              .toShortString(),
-                                          onChanged: (value) => setState(() {
-                                            _selectedTime = value;
-                                          }),
-                                        ),
-                                        Text(remindingTime.weekly
-                                            .toShortString()),
-                                      ],
+                                    RadioListTile(
+                                      title: Text(reminding_time.weekly
+                                          .toShortString()),
+                                      groupValue: _selectedTime,
+                                      value:
+                                          reminding_time.weekly.toShortString(),
+                                      onChanged: (value) => setState(() {
+                                        _selectedTime = value;
+                                      }),
                                     ),
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          groupValue: _selectedTime,
-                                          value: remindingTime.weekly
-                                              .toShortString(),
-                                          onChanged: (value) => setState(() {
-                                            _selectedTime = value;
-                                          }),
-                                        ),
-                                        Text(remindingTime.weekly
-                                            .toShortString()),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          groupValue: _selectedTime,
-                                          value: remindingTime.bimonthly
-                                              .toShortString(),
-                                          onChanged: (value) => setState(() {
-                                            _selectedTime = value;
-                                          }),
-                                        ),
-                                        Text(remindingTime.bimonthly
-                                            .toShortString()),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        Radio(
-                                          groupValue: _selectedTime,
-                                          value: remindingTime.monthly
-                                              .toShortString(),
-                                          onChanged: (value) => setState(() {
-                                            _selectedTime = value;
-                                          }),
-                                        ),
-                                        Text(remindingTime.monthly
-                                            .toShortString()),
-                                      ],
-                                    ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text("Time Selected"),
-                                        Spacer(),
-                                        RaisedButton(
-                                          onPressed: () => _pickTime(),
-                                          child: Text(
-                                              _selectedTimeOfTheDayString !=
-                                                      null
-                                                  ? _selectedTimeOfTheDayString
-                                                  : "Select Time"),
-                                        ),
-                                      ],
+                                    // RadioListTile(
+                                    //   title: Text(remindingTime.bimonthly.toShortString()),
+                                    //   groupValue: _selectedTime,
+                                    //   value: remindingTime.bimonthly.toShortString(),
+                                    //   onChanged: (value) => setState(() {
+                                    //     _selectedTime = value;
+                                    //   }),
+                                    // ),
+                                    // RadioListTile(
+                                    //   title: Text(remindingTime.monthly.toShortString()),
+                                    //   groupValue: _selectedTime,
+                                    //   value: remindingTime.monthly.toShortString(),
+                                    //   onChanged: (value) => setState(() {
+                                    //     _selectedTime = value;
+                                    //   }),
+                                    // ),
+                                    CupertinoTimerPicker(
+                                      initialTimerDuration:
+                                          Duration(minutes: hour * 60 + min),
+                                      onTimerDurationChanged: (value) {
+                                        hour = value.inHours;
+                                        min = value.inMinutes % 60;
+                                      },
+                                      mode: CupertinoTimerPickerMode.hm,
                                     ),
                                     RaisedButton(
                                       onPressed: () {
+                                        _selectedTimeOfTheDayString =
+                                            hour.toString() +
+                                                ":" +
+                                                min.toString();
                                         Utilities.setStringInPref(
                                             "definterval", _selectedTime);
                                         Utilities.setStringInPref(
@@ -240,27 +186,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
-          // Card(
-          //   child: Padding(
-          //     padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: <Widget>[
-          //         Text("Zen Reader (Experimental)"),
-          //         Spacer(),
-          //         Switch(
-          //           onChanged: (val) {
-          //             setState(() {
-          //               _zenReader = val;
-          //               Utilities.setZenBool(val);
-          //             });
-          //           },
-          //           value: _zenReader,
-          //         )
-          //       ],
-          //     ),
-          //   ),
-          // ),
           Card(
             child: GestureDetector(
               onTap: () {

@@ -1,40 +1,50 @@
-# Password Reminder
+<br>
 
+<p align='center'>
+<img height="128"  src="fastlane/metadata/android/en-US/images/featureGraphic.png"/>
+</p>
+
+<p align='center'>
 Reminds passwords so that you don't forget the ones that you saved the login for.
+</p>
+ 
+<p align='center'>
+    <a href='https://play.google.com/store/apps/details?id=com.abhinavmarwaha.passwordreminder'>
+        <img  height="56"  alt='Get it on Google Play' style="padding-right:8px;" src='assets/get-it-on-play-store.png' />
+    </a>
+    <a href='https://f-droid.org/packages/org.abhinavmarwaha.passwordreminder/'>
+        <img height="56" src="assets/external/get-it-on-fdroid.png">
+    </a>
+</p>
+
+<br>
+
+<p align='center'>
+    <img src="https://img.shields.io/github/license/abhinavmarwaha/passwordreminder?color=teal"/>
+    <img src="https://img.shields.io/github/v/release/abhinavmarwaha/passwordreminder?include_prereleases&color=teal"/>
+</p>
+
+# Why
+
+The problem with E2EE is if you forget your password, your data is gone forever. Thats where Password Reminder comes in, it will reminder you periodically to check your password against a hashed one.
 
 # Features:
 
 * Passwords are hashed in local storage therfore nobody can retreive passwords from the app.
-* Can remind daily, triweekly. biweekly, weekly, bimonthly, monthly.
-* Spaced Repetation reminders
-  - First Week - Daily
-  - Then triweekly for the next week
-  - Then Biweekly for the next two weeks
-  - Then weekly for the next month
-  - Then monthly untill you delete reminder
+* Can remind daily, triweekly. biweekly, weekly.
 * Dark mode
-* Fingerprint Protection
-* 
-
-# Screenshots
-
-<img src="/assets/screenshots/1.png" width="330" height="660" alt="Curator Screenshot 1"><img src="/assets/screenshots/2.png" width="330" height="660" alt="Curator Screenshot 2">
-
-<img src="/assets/screenshots/3.png" width="330" height="660" alt="Curator Screenshot 3"><img src="/assets/screenshots/4.png" width="330" height="660" alt="Curator Screenshot 4">
 
 ## Getting Started
 
-you can get the latest release [here](https://github.com/abhinavmarwaha/passwordreminder/releases).
-
-<a href="https://play.google.com/store/apps/details?id=com.abhinavmarwaha.passwordreminder"><img src="/assets/get-it-on-play-store.png" width="300" height="auto" alt="Play Store Link"></a>
+you can get the latest release [here](https://github.com/abhinavmarwaha/passwordreminder/releases)
 
 ## Issues
 
-* The state management is not so great.
+* Fixing deep linking in app. (does not open the reminder when clicked on notification)
 
 ## Todo
 
-[Roadmap](https://github.com/abhinavmarwaha/passwordreminder/projects/1).
+[Roadmap](https://github.com/abhinavmarwaha/passwordreminder/projects/2).
 
 ## License
 

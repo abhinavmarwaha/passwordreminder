@@ -50,9 +50,38 @@ class Utilities {
     return defRemindingTimeOfDay;
   }
 
+  static Future<bool> getBatteryOptimisation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool batteryOptimisation;
+    if (prefs.containsKey('BatteryOptimisation'))
+      batteryOptimisation = prefs.getBool('BatteryOptimisation');
+    else {
+      await prefs.setBool('BatteryOptimisation', false);
+      batteryOptimisation = false;
+    }
+    return batteryOptimisation;
+  }
+
+  static Future<bool> getAutoStart() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool autostart;
+    if (prefs.containsKey('autostart'))
+      autostart = prefs.getBool('autostart');
+    else {
+      await prefs.setBool('autostart', false);
+      autostart = false;
+    }
+    return autostart;
+  }
+
   static Future<bool> setStringInPref(String key, String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString(key, value);
+  }
+
+  static Future<bool> setBoolInPref(String key, bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setBool(key, value);
   }
 
   static String hash(String psswd) {
@@ -65,7 +94,11 @@ class Utilities {
   }
 
   static String formatDate(DateTime date) {
-    final DateFormat formatter = DateFormat('yyyyMMdd');
-    return formatter.format(date);
+    try {
+      final DateFormat formatter = DateFormat('yyyyMMdd');
+      return formatter.format(date);
+    } catch (e) {
+      return "";
+    }
   }
 }
