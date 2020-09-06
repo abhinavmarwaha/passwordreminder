@@ -29,6 +29,12 @@ The problem with E2EE is if you forget your password, your data is gone forever.
 
 you can get the latest release [here](https://github.com/abhinavmarwaha/passwordreminder/releases)
 
+## Have Suggetions ?
+
+You can add an issue [here](https://github.com/abhinavmarwaha/passwordreminder/issues) or fill up a google form [here](https://forms.gle/2Z9JiPAFSqsuu4zg6)
+
+or you can contact me at abhinavmarwaha@protonmail.com or [@bladehunter:matrix.org](https://matrix.to/#/@bladehunter:matrix.org)
+
 ## Issues
 
 * Fixing deep linking in app. (does not open the reminder when clicked on notification)
@@ -48,3 +54,7 @@ you can get the latest release [here](https://github.com/abhinavmarwaha/password
 <img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174">
 
 </a><a href="https://rzp.io/l/abhinavmarwaha"><img src="/assets/rzrpay.png" alt="Pay through Indian Methods"></img></a>
+
+Bitcoin : bc1qfmwzy7qp97r9cnh7n9y4yze8t0lt7dyzyhtg07
+
+Ethereum : 0xd1bc95ef48A6F73bab312d8E87beD3D4Dac01ab9
