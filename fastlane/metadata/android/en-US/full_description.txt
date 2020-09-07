@@ -1,11 +1,10 @@
-Features:
-    All data is in local database
-    Runs on mobile, no need of external server
-    Rss and Atom
-    Dark Mode
-    Read/unread
-    Bookmark
-    Zen Reader (Experimental)
-    Podcast Support
-    Hold to view the summary of rss feed item
-    Categories
+Why?
+
+The problem with E2EE is if you forget your password, your data is gone forever. Thats where Password Reminder comes in, it will reminder you periodically to check your password against a hashed one.
+
+Features
+
+Passwords are hashed in local storage therfore nobody can retreive passwords from the app.
+Can remind daily, triweekly. biweekly, weekly.
+Dark mode
+Fingerprint Lock
