@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:passwordfield/passwordfield.dart';
 import 'package:passwordreminder/constants.dart';
 import 'package:passwordreminder/models/reminder.dart';
@@ -31,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int hour = DateTime.now().hour, min = DateTime.now().minute;
   String _selectedTime = reminding_time.daily.toShortString();
   TextEditingController _passswordTestController = new TextEditingController();
+
+  bool _auth = false;
 
   dialogInitEdit(int _index) {
     _nameController = new TextEditingController();
@@ -68,6 +71,14 @@ class _HomeScreenState extends State<HomeScreen> {
     checkBatteryOptimisation();
     checkAutoStart();
 
+    Utilities.getAuthBool().then((value) async {
+      _auth = value;
+      if (_auth) {
+        bool didAuthenticate = await LocalAuthentication()
+            .authenticateWithBiometrics(localizedReason: '');
+        if (didAuthenticate) {}
+      }
+    });
     Reminder rem = GetIt.instance.get(instanceName: REMINDER_SERVICE).curRemin;
     if (rem != null) {
       testReminder(null, rem);
@@ -95,23 +106,27 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: _reminders.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onTap: () {
                     showReminder(index);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          _reminders[index].name,
-                          style: TextStyle(),
-                        ),
-                        Text(
-                          _reminders[index].userName,
-                          style: TextStyle(color: Colors.grey),
-                        )
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            _reminders[index].name,
+                            style: TextStyle(fontSize: 28),
+                          ),
+                          Text(
+                            _reminders[index].userName,
+                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -165,9 +180,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                         RadioListTile(
-                          title: Text(reminding_time.tryweekly.toShortString()),
+                          title: Text(reminding_time.triweekly.toShortString()),
                           groupValue: _selectedTime,
-                          value: reminding_time.tryweekly.toShortString(),
+                          value: reminding_time.triweekly.toShortString(),
                           onChanged: (value) {
                             setState(() {
                               _selectedTime = value;
@@ -190,22 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             _selectedTime = value;
                           }),
                         ),
-                        // RadioListTile(
-                        //   title: Text(reminding_time.bimonthly.toShortString()),
-                        //   groupValue: _selectedTime,
-                        //   value: reminding_time.bimonthly.toShortString(),
-                        //   onChanged: (value) => setState(() {
-                        //     _selectedTime = value;
-                        //   }),
-                        // ),
-                        // RadioListTile(
-                        //   title: Text(reminding_time.monthly.toShortString()),
-                        //   groupValue: _selectedTime,
-                        //   value: reminding_time.monthly.toShortString(),
-                        //   onChanged: (value) => setState(() {
-                        //     _selectedTime = value;
-                        //   }),
-                        // ),
                         CupertinoTimerPicker(
                           initialTimerDuration:
                               Duration(minutes: hour * 60 + min),
@@ -231,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             getReminders();
                             Navigator.of(context).pop();
                           },
-                          child: Text("Submit"),
+                          child: Text("Add"),
                         )
                       ],
                     ),
@@ -244,38 +243,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   showReminder(int _index) {
+    int _hour = _reminders[_index].remindingTimeOfTheDayHour;
+    int _min = _reminders[_index].remindingTimeOfTheDayMin;
+    String _time = Utilities.is12hours(_hour)
+        ? "$_hour : $_min AM"
+        : "${_hour - 12} : $_min PM";
+
     print(_reminders[_index].toMap());
     showDialog(
       context: context,
       builder: (context) => Dialog(
         child: SizedBox(
-          height: 192,
+          height: 215,
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(_reminders[_index].name),
+                  child: Text(_reminders[_index].name,
+                      style: TextStyle(fontSize: 18)),
+                ),
+                Divider(
+                  color: Colors.black,
+                  thickness: 1,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("UserName: " + _reminders[_index].userName),
+                  child: Text(_reminders[_index].userName,
+                      style: TextStyle(fontSize: 15)),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("Time: " +
-                      _reminders[_index].remindingTimeOfTheDayHour.toString() +
-                      ":" +
-                      _reminders[_index].remindingTimeOfTheDayMin.toString()),
+                  child: Text(_time),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child:
-                      Text("Type: " + _reminders[_index].time.toShortString()),
+                  child: Text(_reminders[_index].time.toShortString()),
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     FlatButton(
                       child: Text("Edit"),
@@ -367,9 +375,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                         RadioListTile(
-                          title: Text(reminding_time.tryweekly.toShortString()),
+                          title: Text(reminding_time.triweekly.toShortString()),
                           groupValue: _selectedTime,
-                          value: reminding_time.tryweekly.toShortString(),
+                          value: reminding_time.triweekly.toShortString(),
                           onChanged: (value) {
                             setState(() {
                               _selectedTime = value;
@@ -392,22 +400,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             _selectedTime = value;
                           }),
                         ),
-                        // RadioListTile(
-                        //   title: Text(reminding_time.bimonthly.toShortString()),
-                        //   groupValue: _selectedTime,
-                        //   value: reminding_time.bimonthly.toShortString(),
-                        //   onChanged: (value) => setState(() {
-                        //     _selectedTime = value;
-                        //   }),
-                        // ),
-                        // RadioListTile(
-                        //   title: Text(reminding_time.monthly.toShortString()),
-                        //   groupValue: _selectedTime,
-                        //   value: reminding_time.monthly.toShortString(),
-                        //   onChanged: (value) => setState(() {
-                        //     _selectedTime = value;
-                        //   }),
-                        // ),
                         CupertinoTimerPicker(
                           initialTimerDuration:
                               Duration(minutes: hour * 60 + min),
@@ -433,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             _dbHelper.editReminder(_reminder);
                             Navigator.of(context).pop();
                           },
-                          child: Text("Submit"),
+                          child: Text("Edit"),
                         )
                       ],
                     ),
@@ -452,18 +444,23 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         child: SizedBox(
-          height: 144,
+          height: 165,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(_reminders[_index].name ?? rem.name),
-                Text(_reminders[_index].userName ?? rem.userName),
-                TextField(
+                Text(
+                  _reminders[_index].name ?? rem.name,
+                  style: TextStyle(fontSize: 24),
+                ),
+                Text(
+                  _reminders[_index].userName ?? rem.userName,
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+                PasswordField(
                   controller: _passswordTestController,
-                  decoration: InputDecoration(
-                      border: InputBorder.none, hintText: "Password"),
+                  hintText: "Password",
                 ),
                 RaisedButton(
                   onPressed: () {
@@ -475,8 +472,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.CENTER,
                           timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.white,
-                          textColor: Colors.blue,
+                          backgroundColor: Colors.blue,
+                          textColor: Colors.white,
                           fontSize: 16.0);
                       Navigator.of(context).pop();
                     } else {
@@ -515,7 +512,7 @@ class _HomeScreenState extends State<HomeScreen> {
               context: context,
               builder: (context) => AlertDialog(
                 title: Text(
-                    "The App is batary optimised this may hinder the normal functionaly of the app"),
+                    "The App is battery optimized, this may hinder normal functionality"),
                 actions: [
                   FlatButton(
                     child: Text("Take me to Settings"),
@@ -550,7 +547,7 @@ class _HomeScreenState extends State<HomeScreen> {
             context: context,
             builder: (context) => AlertDialog(
               title: Text(
-                  "If you want to get notification after boot, you should give the permision to autostart"),
+                  "Give the permission to autostart so that you can get notifications after boot"),
               actions: [
                 FlatButton(
                   child: Text("Sure"),
@@ -574,7 +571,8 @@ class _HomeScreenState extends State<HomeScreen> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text("You have to start application after boot"),
+              title: Text(
+                  "You may have to start the application after every boot to get notifications"),
               actions: [
                 FlatButton(
                   child: Text("Ok"),

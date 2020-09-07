@@ -41,7 +41,7 @@ class Reminder {
 
 enum reminding_time {
   daily,
-  tryweekly,
+  triweekly,
   biweekly,
   weekly,
   // bimonthly,

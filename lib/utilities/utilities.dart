@@ -38,6 +38,18 @@ class Utilities {
     return definterval;
   }
 
+  static Future<bool> getAuthBool() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool authBool;
+    if (prefs.containsKey('authBool'))
+      authBool = prefs.getBool('authBool');
+    else {
+      await prefs.setBool('authBool', false);
+      authBool = false;
+    }
+    return authBool;
+  }
+
   static Future<String> getDefRemindingTimeOfDay() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String defRemindingTimeOfDay;
@@ -100,5 +112,12 @@ class Utilities {
     } catch (e) {
       return "";
     }
+  }
+
+  static bool is12hours(int _hours) {
+    if (_hours <= 12)
+      return true;
+    else
+      return false;
   }
 }

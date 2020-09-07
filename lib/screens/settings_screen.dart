@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:passwordreminder/utilities/theme_changer.dart';
 import 'package:passwordreminder/utilities/utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:local_auth/local_auth.dart';
 
 import '../constants.dart';
 import '../models/reminder.dart';
@@ -14,15 +15,23 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _darkMode = false;
+  bool _auth = false;
   int hour, min;
   String _selectedTime;
   String _selectedTimeOfTheDayString;
+  LocalAuthentication _localAuthentication;
 
   @override
   void initState() {
+    _localAuthentication = LocalAuthentication();
     ThemeChanger.getDarkModePlainBool().then((value) {
       setState(() {
         _darkMode = value;
+      });
+    });
+    Utilities.getAuthBool().then((value) {
+      setState(() {
+        _auth = value;
       });
     });
     Utilities.getDefRemindingTimeOfDay().then((value) => setState(() {
@@ -71,6 +80,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           Card(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text("Fingerprint Lock"),
+                  Spacer(),
+                  Switch(
+                    onChanged: (val) async {
+                      bool didAuthenticate = await _localAuthentication
+                          .authenticateWithBiometrics(localizedReason: "");
+                      setState(() {
+                        if (didAuthenticate) {
+                          _auth = val;
+                          Utilities.setBoolInPref("authBool", val);
+                        }
+                      });
+                    },
+                    value: _auth,
+                  )
+                ],
+              ),
+            ),
+          ),
+          Card(
             child: GestureDetector(
               onTap: () {
                 showDialog(
@@ -81,7 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0)),
                           child: SizedBox(
-                            height: 660,
+                            height: 500,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: SingleChildScrollView(
@@ -100,10 +134,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       },
                                     ),
                                     RadioListTile(
-                                      title: Text(reminding_time.tryweekly
+                                      title: Text(reminding_time.triweekly
                                           .toShortString()),
                                       groupValue: _selectedTime,
-                                      value: reminding_time.tryweekly
+                                      value: reminding_time.triweekly
                                           .toShortString(),
                                       onChanged: (value) {
                                         setState(() {
@@ -131,22 +165,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         _selectedTime = value;
                                       }),
                                     ),
-                                    // RadioListTile(
-                                    //   title: Text(remindingTime.bimonthly.toShortString()),
-                                    //   groupValue: _selectedTime,
-                                    //   value: remindingTime.bimonthly.toShortString(),
-                                    //   onChanged: (value) => setState(() {
-                                    //     _selectedTime = value;
-                                    //   }),
-                                    // ),
-                                    // RadioListTile(
-                                    //   title: Text(remindingTime.monthly.toShortString()),
-                                    //   groupValue: _selectedTime,
-                                    //   value: remindingTime.monthly.toShortString(),
-                                    //   onChanged: (value) => setState(() {
-                                    //     _selectedTime = value;
-                                    //   }),
-                                    // ),
                                     CupertinoTimerPicker(
                                       initialTimerDuration:
                                           Duration(minutes: hour * 60 + min),

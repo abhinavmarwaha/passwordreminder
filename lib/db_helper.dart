@@ -55,10 +55,10 @@ class DbHelper {
         addNotifDaily(_reminder, db);
         break;
 
-      case reminding_time.tryweekly:
-        addNotifWeekly(_reminder, db, reminding_time.tryweekly, Day.Monday);
-        addNotifWeekly(_reminder, db, reminding_time.tryweekly, Day.Thursday);
-        addNotifWeekly(_reminder, db, reminding_time.tryweekly, Day.Sunday);
+      case reminding_time.triweekly:
+        addNotifWeekly(_reminder, db, reminding_time.triweekly, Day.Monday);
+        addNotifWeekly(_reminder, db, reminding_time.triweekly, Day.Thursday);
+        addNotifWeekly(_reminder, db, reminding_time.triweekly, Day.Sunday);
         break;
 
       case reminding_time.biweekly:
@@ -69,21 +69,6 @@ class DbHelper {
       case reminding_time.weekly:
         addNotifWeekly(_reminder, db, reminding_time.weekly, Day.Monday);
         break;
-
-      // case reminding_time.bimonthly:
-      //   addBimonthlyNotif(_reminder, db);
-      //   break;
-      // case reminding_time.monthly:
-      //   addNotifMonthly(_reminder, db);
-      //   break;
-
-      // case reminding_time.spaced_repetaion:
-      //   // TODO SpacedRepetation
-      //   // GetIt.instance.get(instanceName: REMINDER_SERVICE).spacedNotif(
-      //   //     _reminder.remindingTimeOfTheDayHour,
-      //   //     _reminder.remindingTimeOfTheDayMin,
-      //   //     _reminder.id.toString());
-      //   break;
     }
   }
 
