@@ -11,15 +11,15 @@ Reminds passwords so that you don't forget the ones that you saved the login for
 <br>
 
 <p align='center'>
-    <img src="https://img.shields.io/github/license/abhinavmarwaha/passwordreminder?color=teal"/>
-    <img src="https://img.shields.io/github/v/release/abhinavmarwaha/passwordreminder?include_prereleases&color=teal"/>
+    <img src="https://img.shields.io/github/license/abhinavmarwaha/passwordreminder"/>
+    <img src="https://img.shields.io/github/v/release/abhinavmarwaha/passwordreminder?include_prereleases"/>
 </p>
 
 # Why
 
 The problem with E2EE is if you forget your password, your data is gone forever. Thats where Password Reminder comes in, it will reminder you periodically to check your password against a hashed one.
 
-# Features:
+# Features
 
 * Passwords are hashed in local storage therfore nobody can retreive passwords from the app.
 * Can remind daily, triweekly. biweekly, weekly.
