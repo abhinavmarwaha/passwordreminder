@@ -15,6 +15,13 @@ Reminds passwords so that you don't forget the ones that you saved the login for
     <img src="https://img.shields.io/github/v/release/abhinavmarwaha/passwordreminder?include_prereleases"/>
 </p>
 
+<p align='center'> 
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" height=480px/>
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" height=480px/>
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" height=480px/> 
+</p>
+
+
 # Why
 
 The problem with E2EE is if you forget your password, your data is gone forever. Thats where Password Reminder comes in, it will reminder you periodically to check your password against a hashed one.
@@ -24,6 +31,7 @@ The problem with E2EE is if you forget your password, your data is gone forever.
 * Passwords are hashed in local storage therfore nobody can retreive passwords from the app.
 * Can remind daily, triweekly. biweekly, weekly.
 * Dark mode
+* Fingerprint Lock
 
 ## Getting Started
 
