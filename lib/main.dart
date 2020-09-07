@@ -3,10 +3,13 @@ import 'package:passwordreminder/reminder_service.dart';
 import 'package:passwordreminder/screens/home_screen.dart';
 import 'package:passwordreminder/utilities/theme_changer.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(Phoenix(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

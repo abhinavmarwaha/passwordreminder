@@ -1,6 +1,5 @@
 import 'package:passwordreminder/models/reminder.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:vibration/vibration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:password/password.dart';
 import 'package:intl/intl.dart';
@@ -16,12 +15,6 @@ class Utilities {
       );
     } else {
       throw 'Could not launch $url';
-    }
-  }
-
-  static void vibrate() async {
-    if (await Vibration.hasVibrator()) {
-      Vibration.vibrate(duration: 70, amplitude: 10);
     }
   }
 
@@ -96,13 +89,18 @@ class Utilities {
     return prefs.setBool(key, value);
   }
 
-  static String hash(String psswd) {
+  static Future<String> hash(String psswd) {
     final algorithm = PBKDF2();
-    return Password.hash(psswd, algorithm);
+
+    return Future(() {
+      return Password.hash(psswd, algorithm);
+    });
   }
 
-  static bool verify(String psswd, String hash) {
-    return Password.verify(psswd, hash);
+  static Future<bool> verify(String psswd, String hash) {
+    return Future(() {
+      return Password.verify(psswd, hash);
+    });
   }
 
   static String formatDate(DateTime date) {

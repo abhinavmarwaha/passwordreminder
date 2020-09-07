@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:passwordreminder/utilities/theme_changer.dart';
 import 'package:passwordreminder/utilities/utilities.dart';
 import 'package:provider/provider.dart';
@@ -95,6 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         if (didAuthenticate) {
                           _auth = val;
                           Utilities.setBoolInPref("authBool", val);
+                          Phoenix.rebirth(context);
                         }
                       });
                     },

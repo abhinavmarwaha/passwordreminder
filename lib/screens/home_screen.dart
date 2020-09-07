@@ -10,6 +10,8 @@ import 'package:passwordreminder/utilities/utilities.dart';
 import 'package:battery_optimization/battery_optimization.dart';
 import 'package:autostart/autostart.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:multi_select_item/multi_select_item.dart';
 
 import '../db_helper.dart';
 
@@ -34,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController _passswordTestController = new TextEditingController();
 
   bool _auth = false;
+  bool _didAuthenticate = false;
+  bool _loading = false;
+  MultiSelectController _controller = new MultiSelectController();
 
   dialogInitEdit(int _index) {
     _nameController = new TextEditingController();
@@ -67,25 +72,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    getReminders();
     checkBatteryOptimisation();
     checkAutoStart();
 
-    Utilities.getAuthBool().then((value) async {
+    Utilities.getAuthBool().then((value) {
+      setState(() {
+        _auth = value;
+      });
       _auth = value;
-      if (_auth) {
-        bool didAuthenticate = await LocalAuthentication()
-            .authenticateWithBiometrics(localizedReason: '');
-        if (didAuthenticate) {}
-      }
+      authenticate();
     });
-    Reminder rem = GetIt.instance.get(instanceName: REMINDER_SERVICE).curRemin;
-    if (rem != null) {
-      testReminder(null, rem);
-      GetIt.instance.get(instanceName: REMINDER_SERVICE).curRemin = null;
-    }
-
     super.initState();
+  }
+
+  Future<bool> _onBackPressed() {
+    if (_controller.isSelecting) {
+      setState(() {
+        _controller.deselectAll();
+        _controller.isSelecting = false;
+      });
+      return Future.value(false);
+    } else {
+      return Future.value(true);
+    }
   }
 
   @override
@@ -93,50 +102,154 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: topButtons(context),
+      ),
+      body: WillPopScope(
+        onWillPop: _onBackPressed,
+        child: LoadingOverlay(
+          isLoading: _loading,
+          child: Center(
+              child: ListView.builder(
+                  itemCount: _reminders.length,
+                  itemBuilder: (context, index) {
+                    return MultiSelectItem(
+                      isSelecting: _controller.isSelecting,
+                      onSelected: () {
+                        setState(() {
+                          _controller.toggle(index);
+                        });
+                      },
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          _controller.isSelecting
+                              ? _controller.toggle(index)
+                              : showReminder(index);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: _controller.isSelected(index)
+                                  ? new BoxDecoration(color: Colors.grey[300])
+                                  : new BoxDecoration(),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    _reminders[index].name,
+                                    style: TextStyle(fontSize: 28),
+                                  ),
+                                  Text(
+                                    _reminders[index].userName,
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 14),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  })),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            _auth ? (_didAuthenticate ? addItem() : authenticate()) : addItem(),
+        tooltip: _auth ? (_didAuthenticate ? 'Add' : 'Authenticate') : 'Add',
+        child: Icon(_auth
+            ? (_didAuthenticate ? Icons.add : Icons.fingerprint)
+            : Icons.add),
+      ),
+    );
+  }
+
+  topButtons(_context) {
+    List<Widget> buttons = [];
+    if (_controller.isSelecting) {
+      buttons.add(IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          deleteReminders();
+        },
+      ));
+      buttons.add(IconButton(
+        icon: Icon(Icons.done_all),
+        onPressed: () {
+          setState(() {
+            _controller.selectAll();
+          });
+        },
+      ));
+    } else {
+      buttons.add(IconButton(
+        icon: Icon(Icons.settings),
+        onPressed: () => _auth
+            ? (_didAuthenticate
+                ? Navigator.of(_context).push(
+                    MaterialPageRoute(builder: (_context) => SettingsScreen()))
+                : authenticate())
+            : Navigator.of(_context).push(
+                MaterialPageRoute(builder: (_context) => SettingsScreen())),
+      ));
+    }
+    return buttons;
+  }
+
+  deleteReminders() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Are You Sure?"),
         actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => SettingsScreen())),
+          FlatButton(
+            child: Text("Yes"),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _controller.selectedIndexes.forEach((_index) {
+                _dbHelper
+                    .deleteReminder(_reminders[_index].id)
+                    .then((value) => setState(() => getReminders()));
+              });
+            },
+          ),
+          FlatButton(
+            child: Text("No"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           )
         ],
       ),
-      body: Center(
-          child: ListView.builder(
-              itemCount: _reminders.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    showReminder(index);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            _reminders[index].name,
-                            style: TextStyle(fontSize: 28),
-                          ),
-                          Text(
-                            _reminders[index].userName,
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              })),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => addItem(),
-        tooltip: 'Add',
-        child: Icon(Icons.add),
-      ),
     );
+  }
+
+  authenticate() async {
+    if (_auth) {
+      _didAuthenticate = await LocalAuthentication().authenticateWithBiometrics(
+        localizedReason: '',
+      );
+      if (_didAuthenticate) {
+        getReminders();
+        Reminder rem =
+            GetIt.instance.get(instanceName: REMINDER_SERVICE).curRemin;
+        if (rem != null) {
+          testReminder(null, rem);
+          GetIt.instance.get(instanceName: REMINDER_SERVICE).curRemin = null;
+        }
+      }
+    } else {
+      getReminders();
+      Reminder rem =
+          GetIt.instance.get(instanceName: REMINDER_SERVICE).curRemin;
+      if (rem != null) {
+        testReminder(null, rem);
+        GetIt.instance.get(instanceName: REMINDER_SERVICE).curRemin = null;
+      }
+    }
   }
 
   addItem() {
@@ -216,19 +329,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Reminder _reminder = Reminder(
-                              name: _nameController.text,
-                              userName: _userNameController.text,
-                              passwordHash:
-                                  Utilities.hash(_passswordController.text),
-                              remindingTimeOfTheDayHour: hour,
-                              remindingTimeOfTheDayMin: min,
-                              time: getEnum(_selectedTime),
-                            );
-                            print(_reminder.toMap());
-                            _dbHelper.insertReminder(_reminder);
-                            getReminders();
-                            Navigator.of(context).pop();
+                            setState(() => _loading = true);
+                            addAsync(context);
                           },
                           child: Text("Add"),
                         )
@@ -240,6 +342,25 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           });
         });
+  }
+
+  addAsync(_context) async {
+    Reminder _reminder = Reminder(
+      name: _nameController.text,
+      userName: _userNameController.text,
+      passwordHash: await Utilities.hash(_passswordController.text),
+      remindingTimeOfTheDayHour: hour,
+      remindingTimeOfTheDayMin: min,
+      time: getEnum(_selectedTime),
+    );
+    print(_reminder.toMap());
+    _dbHelper.insertReminder(_reminder).then((value) {
+      getReminders();
+      setState(() {
+        _loading = false;
+      });
+      Navigator.of(_context).pop();
+    });
   }
 
   showReminder(int _index) {
@@ -348,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0)),
               child: SizedBox(
-                height: 660,
+                height: 600,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SingleChildScrollView(
@@ -411,19 +532,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                            Reminder _reminder = Reminder(
-                              id: _reminders[_index].id,
-                              name: _nameController.text,
-                              userName: _userNameController.text,
-                              passwordHash:
-                                  Utilities.hash(_passswordController.text),
-                              remindingTimeOfTheDayHour: hour,
-                              remindingTimeOfTheDayMin: min,
-                              time: getEnum(_selectedTime),
-                            );
-                            print(_reminder.toMap());
-                            _dbHelper.editReminder(_reminder);
-                            Navigator.of(context).pop();
+                            editAsync(context, _index);
+                            setState(() => _loading = true);
                           },
                           child: Text("Edit"),
                         )
@@ -435,6 +545,25 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           });
         });
+  }
+
+  editAsync(_context, _index) async {
+    Reminder _reminder = Reminder(
+      id: _reminders[_index].id,
+      name: _nameController.text,
+      userName: _userNameController.text,
+      passwordHash: await Utilities.hash(_passswordController.text),
+      remindingTimeOfTheDayHour: hour,
+      remindingTimeOfTheDayMin: min,
+      time: getEnum(_selectedTime),
+    );
+    print(_reminder.toMap());
+    _dbHelper.editReminder(_reminder).then((value) => getReminders());
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    setState(() {
+      _loading = false;
+    });
   }
 
   testReminder(int _index, Reminder rem) {
@@ -463,10 +592,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   hintText: "Password",
                 ),
                 RaisedButton(
-                  onPressed: () {
-                    if (_reminders[_index].passwordHash.compareTo(
-                            Utilities.hash(_passswordTestController.text)) ==
-                        0) {
+                  onPressed: () async {
+                    if (await Utilities.verify(_passswordTestController.text,
+                        _reminders[_index].passwordHash)) {
                       Fluttertoast.showToast(
                           msg: "Yippee the password is correct!!",
                           toastLength: Toast.LENGTH_SHORT,
@@ -500,6 +628,7 @@ class _HomeScreenState extends State<HomeScreen> {
   getReminders() {
     _dbHelper.getReminders().then((reminders) => setState(() {
           _reminders = reminders;
+          _controller.set(_reminders.length);
         }));
   }
 
