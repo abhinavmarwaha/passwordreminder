@@ -13,6 +13,7 @@ Reminds passwords so that you don't forget the ones that you saved the login for
 <p align='center'>
     <img src="https://img.shields.io/github/license/abhinavmarwaha/passwordreminder"/>
     <img src="https://img.shields.io/github/v/release/abhinavmarwaha/passwordreminder?include_prereleases"/>
+    <a href="https://codemagic.io/apps/5f572d13e2db274f69c660d1/5f572d13e2db274f69c660d0/latest_build"><img src="https://api.codemagic.io/apps/5f572d13e2db274f69c660d1/5f572d13e2db274f69c660d0/status_badge.svg"/></a>
 </p>
 
 <p align='center'> 
