@@ -8,6 +8,12 @@
 Reminds passwords so that you don't forget the ones that you saved the login for.
 </p>
 
+<p align='center'>
+    <a href='https://play.google.com/store/apps/details?id=com.abhinavmarwaha.passwordreminder'>
+        <img  height="56"  alt='Get it on Google Play' style="padding-right:8px;" src='assets/get-it-on-play-store.png' />
+    </a>
+</p>
+
 <br>
 
 <p align='center'>
